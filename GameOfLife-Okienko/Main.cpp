@@ -2,7 +2,6 @@
 #include <thread>
 #include <chrono>
 #include <Windows.h>
-#include <random>
 
 #include "Miejsce.h"
 #include "Type.h"
@@ -12,7 +11,7 @@
 #include "StartRestart.h"
 
 // Czas pomiędzy kolejnymi krokami gry (w ms)
-int Time{100};
+int Time{500};
 
 // Obiekt planszy
 Plansza plansza;
@@ -30,14 +29,23 @@ bool checkboxes_state[amount_height * amount_width]{};
 HWND Enter_Button;
 // Button do restartowania gry 
 HWND Restart_Button;
+// Edit Control do czasu
+HWND Time_Edit;
+// Bool do sprawdzania czy Edit Control do czasu został już zainicjalizowany
+// Potrzebne gdyż podczas tworzenia Edit Control wysyła on wiadomość o treści 0
+bool Initialaized{ false };
+// Text do Edit Control do czasu
+HWND Time_Text;
 
 // panel UI i panel z checkboxami
 HWND UI_Panel;
 HWND Game_Panel;
 
-// ID Enter Button - 65534 ID Restart Button - 65533
+// ID Enter Button - 65534, ID Restart Button - 65533, ID Time Edit - 65532, ID Timer - 65531
 #define ID_ENTER 65534
 #define ID_RESTART 65533
+#define ID_TIME_EDIT 65532
+#define ID_TIMER 65531
 
 
 
@@ -89,16 +97,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 return 0;
             }
             
-			// Rozpoczecie gry (ENTER)
+			// Rozpoczecie gry (ENTER) - (Używa StartRestart.h)
             else if (wParam == VK_RETURN) {
                 // Start Gry (StartRestart.h)
-				GameStarted = StartGame(Enter_Button, Restart_Button, UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
+				GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, 
+                                            UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
+                // Ustawienie Timera który wykonuje kolejne kroki gry co określoną ilość czasu (Time)
+                SetTimer(hwnd, ID_TIMER, Time, NULL);
                 return 0;
             }
 
-            // Restart Gry (R)
+            // Restart Gry (R) - (Używa StartRestart.h)
             else if (wParam == 0x52) {
-                GameStarted = RestartGame(Enter_Button, Restart_Button, UI_Panel, Game_Panel, checkboxes, &plansza);
+                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, 
+                                            UI_Panel, Game_Panel, checkboxes, &plansza);
+
+				// Wyłączenie Timera
+				KillTimer(hwnd, ID_TIMER);
                 return 0;
             }
 
@@ -131,7 +146,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (GameStarted == true) {
                 plansza.AllNeighbours();
                 plansza.AllPlay();
-				plansza.Show();
+				// plansza.Show();
                 InvalidateRect(hwnd, NULL, FALSE);
             }
             return 0;
@@ -167,15 +182,43 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case WM_COMMAND: {
             // Start Gry (StartRestart.h)
             if (LOWORD(wParam) == ID_ENTER) {
-                GameStarted = StartGame(Enter_Button, Restart_Button, UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
+                GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, 
+                                            UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
+                // Ustawienie Timera który wykonuje kolejne kroki gry co określoną ilość czasu (Time)
+                SetTimer(GetParent(hwnd), ID_TIMER, Time, NULL);
+
                 SetFocus(GetParent(hwnd));
                 return 0;
             }
 
             // Restart Gry (StartRestart.h)
-            if (LOWORD(wParam) == ID_RESTART) {
-                GameStarted = RestartGame(Enter_Button, Restart_Button, UI_Panel, Game_Panel, checkboxes, &plansza);
+            else if (LOWORD(wParam) == ID_RESTART) {
+                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, 
+                                            UI_Panel, Game_Panel, checkboxes, &plansza);
+
+				// Wyłączenie Timera
+				KillTimer(GetParent(hwnd), ID_TIMER);
+
                 SetFocus(GetParent(hwnd));
+                return 0;
+            }
+
+			// Zmiana czasu pomiędzy krokami gry
+            else if (LOWORD(wParam) == ID_TIME_EDIT && HIWORD(wParam) == EN_CHANGE) {
+				
+                if (Initialaized == false) {
+                    Initialaized = true;
+                    return 0;
+                }
+
+                char buffer[256];
+                GetWindowTextA(Time_Edit, buffer, 256);
+                if (atoi(buffer) < 0) {
+                    Time = 1;
+					SetWindowTextA(Time_Edit, "1");
+                }
+				Time = atoi(buffer);
+                
                 return 0;
             }
         }
@@ -341,23 +384,46 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         hInstance,
         NULL
     );
+	// Tworzenie Restart Buttona
     Restart_Button = CreateWindowEx(
         0,
         L"BUTTON",
         L"Restart",
         SW_HIDE | WS_CHILD | BS_PUSHBUTTON,
-        width - 400, 35, 75, 75,
+        width - 150, 40, 75, 75,
         UI_Panel,
         (HMENU)ID_RESTART,
         hInstance,
         NULL
     );
+	// Tworzenie Edit Control do czasu
+    Time_Edit = CreateWindowEx(
+        0,
+        L"EDIT",
+        L"500",
+        WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER | ES_CENTER,
+        width - 450, 75, 100, 20,
+        UI_Panel,
+        (HMENU)ID_TIME_EDIT,
+        hInstance,
+        NULL
+    );
+	// Tworzenie Texta do Edit Control do czasu
+    Time_Text = CreateWindowEx(
+        0,
+        L"STATIC",
+        L"Time (ms):",
+        WS_VISIBLE | WS_CHILD | ES_CENTER ,
+        width - 450, 50, 100, 20,
+        UI_Panel,
+        NULL,
+        hInstance,
+        NULL
+	);
+    
 
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
-
-	// Ustawienie Timera który wykonuje kolejne kroki gry co określoną ilość czasu (Time)
-	SetTimer(hwnd, 1, Time, NULL);
 
 	// Pętla wiadomości która odpowiada za odbieranie inputów
     MSG msg = { };

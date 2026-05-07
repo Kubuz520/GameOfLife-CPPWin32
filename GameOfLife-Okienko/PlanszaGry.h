@@ -32,7 +32,7 @@ public:
         for (int i = 0; i < amount_width; i++) {
             std::cout << "\n";
             for (int j = 0; j < amount_height; j++) {
-                printf("%d", tablica[i][j]->GetTile());
+                printf("%c", tablica[i][j]->GetTile());
             }
         }
     }
