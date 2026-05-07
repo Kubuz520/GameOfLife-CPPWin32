@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="GameOfLife-Okienko/GameOfLife-Okienko.vcxproj" Id="4d406bc3-bb72-444d-8212-1652382dec75" />
+</Solution>
