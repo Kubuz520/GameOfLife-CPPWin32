@@ -225,13 +225,10 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             // Czyszczenie planszy z bloków
             else if (LOWORD(wParam) == ID_CLEAR) {
-                for (int i{ 0 };i < ilosc; i++) {
-                    blocks[i] = blocks[i + 1];
-                }
+                ilosc = 0;
                 for (int i{0};i<amount_height*amount_width;i++){
 					checkboxes_state[i] = false;
                 }
-                ilosc = 0;
                 HWND hChild = GetWindow(GetParent(hwnd), GW_CHILD);
 				InvalidateRect(hChild, NULL, FALSE);
                 return 0;
