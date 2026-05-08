@@ -237,11 +237,15 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             else if (LOWORD(wParam) == ID_STOP) {
                 if (GameStarted == true) {
                     Button_SetText(Stop_Button, L"Resume");
+                    ShowWindow(Time_Edit, SW_SHOW);
+                    ShowWindow(Time_Text, SW_SHOW);
 					GameStarted = false;
                     KillTimer(GetParent(hwnd), ID_TIMER);
 				}
                 else {
                     Button_SetText(Stop_Button, L"Stop");
+                    ShowWindow(Time_Edit, SW_HIDE);
+                    ShowWindow(Time_Text, SW_HIDE);
                     GameStarted = true;
                     SetTimer(GetParent(hwnd), ID_TIMER, Time, NULL);
                 }
@@ -399,7 +403,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         L"EDIT",
         L"500",
         WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER | ES_CENTER,
-        width - 450, 75, 100, 20,
+        width - 440, 75, 100, 20,
         UI_Panel,
         (HMENU)ID_TIME_EDIT,
         hInstance,
@@ -411,7 +415,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         L"STATIC",
         L"Time (ms):",
         WS_VISIBLE | WS_CHILD | ES_CENTER,
-        width - 450, 50, 100, 20,
+        width - 440, 50, 100, 20,
         UI_Panel,
         NULL,
         hInstance,
@@ -435,7 +439,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         L"BUTTON",
         L"Restart",
         SW_HIDE | WS_CHILD | BS_PUSHBUTTON,
-        width - 150, 40, 75, 75,
+        width - 200, 40, 75, 75,
         UI_Panel,
         (HMENU)ID_RESTART,
         hInstance,
@@ -447,7 +451,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         L"BUTTON",
         L"Stop",
         SW_HIDE | WS_CHILD | BS_PUSHBUTTON,
-        width - 250, 40, 75, 75,
+        width - 300, 40, 75, 75,
         UI_Panel,
         (HMENU)ID_STOP,
         hInstance,
