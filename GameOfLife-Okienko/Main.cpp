@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <Windows.h>
+#include <windowsx.h>
 
 #include "Miejsce.h"
 #include "Type.h"
@@ -36,6 +37,8 @@ HWND Time_Edit;
 bool Initialaized{ false };
 // Clear Button do usuwania wszystkich bloków z planszy
 HWND Clear_Button;
+// Stop Button do zatrzymywania gry podczas symulacji
+HWND Stop_Button;
 
 // Text do Edit Control do czasu
 HWND Time_Text;
@@ -44,12 +47,14 @@ HWND Time_Text;
 HWND UI_Panel;
 HWND Game_Panel;
 
-// ID Enter Button - 65534, ID Restart Button - 65533, ID Time Edit - 65532, ID Timer - 65531, ID Clear Button - 65530
+// ID Enter Button - 65534, ID Restart Button - 65533, ID Time Edit - 65532, 
+// ID Timer - 65531, ID Clear Button - 65530, ID Stop Button - 65529
 #define ID_ENTER 65534
 #define ID_RESTART 65533
 #define ID_TIME_EDIT 65532
 #define ID_TIMER 65531
 #define ID_CLEAR 65530
+#define ID_STOP 65529
 
 // Handler Inputów dla głownego okna gry
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -101,7 +106,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			// Rozpoczecie gry (ENTER) - (Używa StartRestart.h)
             else if (wParam == VK_RETURN) {
                 // Start Gry (StartRestart.h)
-				GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, 
+				GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
                                             UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
                 // Ustawienie Timera który wykonuje kolejne kroki gry co określoną ilość czasu (Time)
                 SetTimer(hwnd, ID_TIMER, Time, NULL);
@@ -110,7 +115,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             // Restart Gry (R) - (Używa StartRestart.h)
             else if (wParam == 0x52) {
-                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, 
+                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
                                             UI_Panel, Game_Panel, checkboxes, &plansza);
 
 				// Wyłączenie Timera
@@ -120,24 +125,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             // Poruszanie Sie (WSAD) TODO
 
-            else if (wParam == 0x57) { // (W)
-                //for (int i = 0;i < amount_width; i++) {
-                //    for (int j = 0;j < amount_height;j++) {
-                //        RECT rect;
-                //        GetWindowRect(checkboxes[(i * amount_height) + j], &rect);
-                //        SetWindowPos(checkboxes[(i * amount_height) + j],NULL , rect.left, rect.right - 10, 0, 0, SWP_NOSIZE);
-                //    }
-                //}
-            }
-            else if (wParam == 0x53) { // (S)
+            //else if (wParam == 0x57) { // (W)
 
-            }
-            else if (wParam == 0x41) { // (A)
+            //}
+            //else if (wParam == 0x53) { // (S)
 
-            }
-            else if (wParam == 0x44) { // (D)
+            //}
+            //else if (wParam == 0x41) { // (A)
 
-            }
+            //}
+            //else if (wParam == 0x44) { // (D)
+
+            //}
 
             return 0;
         }
@@ -183,7 +182,7 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case WM_COMMAND: {
             // Start Gry (StartRestart.h)
             if (LOWORD(wParam) == ID_ENTER) {
-                GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button,
+                GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
                                             UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
                 // Ustawienie Timera który wykonuje kolejne kroki gry co określoną ilość czasu (Time)
                 SetTimer(GetParent(hwnd), ID_TIMER, Time, NULL);
@@ -194,7 +193,7 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             // Restart Gry (StartRestart.h)
             else if (LOWORD(wParam) == ID_RESTART) {
-                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, 
+                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
                                             UI_Panel, Game_Panel, checkboxes, &plansza);
 
 				// Wyłączenie Timera
@@ -232,6 +231,21 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 HWND hChild = GetWindow(GetParent(hwnd), GW_CHILD);
 				InvalidateRect(hChild, NULL, FALSE);
                 return 0;
+            }
+
+            // Stop Button
+            else if (LOWORD(wParam) == ID_STOP) {
+                if (GameStarted == true) {
+                    Button_SetText(Stop_Button, L"Resume");
+					GameStarted = false;
+                    KillTimer(GetParent(hwnd), ID_TIMER);
+				}
+                else {
+                    Button_SetText(Stop_Button, L"Stop");
+                    GameStarted = true;
+                    SetTimer(GetParent(hwnd), ID_TIMER, Time, NULL);
+                }
+                    
             }
         }
 	}
@@ -299,6 +313,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     FILE* f;
     freopen_s(&f, "CONOUT$", "w", stdout);
 
+    //Blueprinty ---------------------------
     const wchar_t nazwa[] = L"GameOfLife";
     const wchar_t UI_nazwa[] = L"UI";
     const wchar_t Game_nazwa[] = L"Game";
@@ -378,18 +393,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         hInstance,
         NULL
     );
-    // Tworzenie Restart Buttona
-    Restart_Button = CreateWindowEx(
-        0,
-        L"BUTTON",
-        L"Restart",
-        SW_HIDE | WS_CHILD | BS_PUSHBUTTON,
-        width - 150, 40, 75, 75,
-        UI_Panel,
-        (HMENU)ID_RESTART,
-        hInstance,
-        NULL
-    );
     // Tworzenie Edit Control do czasu
     Time_Edit = CreateWindowEx(
         0,
@@ -426,7 +429,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         hInstance,
         NULL
     );
-
+    // Tworzenie Restart Buttona
+    Restart_Button = CreateWindowEx(
+        0,
+        L"BUTTON",
+        L"Restart",
+        SW_HIDE | WS_CHILD | BS_PUSHBUTTON,
+        width - 150, 40, 75, 75,
+        UI_Panel,
+        (HMENU)ID_RESTART,
+        hInstance,
+        NULL
+    );
+	// Tworzenie Stop Buttona
+    Stop_Button = CreateWindowEx(
+        0,
+        L"BUTTON",
+        L"Stop",
+        SW_HIDE | WS_CHILD | BS_PUSHBUTTON,
+        width - 250, 40, 75, 75,
+        UI_Panel,
+        (HMENU)ID_STOP,
+        hInstance,
+        NULL
+	);
 
 	// Tworzenie Checkboxów
     for (int i = 0;i < amount_width; i++) {
@@ -436,8 +462,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 L"BUTTON",
                 L"",
                 WS_VISIBLE | WS_CHILD | BS_OWNERDRAW,
-                 block_width * (i), block_height * (j), block_width, block_height,
-                //0, 0, block_width, block_height,
+                block_width * (i), block_height * (j), block_width, block_height,
                 Game_Panel,
                 (HMENU)((i * amount_height) + j),
                 hInstance,

@@ -4,8 +4,8 @@
 #include "Information.h"
 
 // Funkcja startująca grę
-bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND Clear_Button, HWND UI_Panel, HWND Game_Panel, HWND checkboxes[amount_width*amount_height], Plansza* plansza,
-                int blocks[], int ilosc) {
+bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND Clear_Button, HWND Stop_Button, HWND UI_Panel, HWND Game_Panel,
+                HWND checkboxes[amount_width*amount_height], Plansza* plansza, int blocks[], int ilosc) {
 
     for (int i = 0;i < amount_width; i++) {
         for (int j = 0;j < amount_height;j++) {
@@ -17,6 +17,8 @@ bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time
     ShowWindow(Time_Edit, SW_HIDE);
     ShowWindow(Time_Text, SW_HIDE);
     ShowWindow(Restart_Button, SW_SHOW);
+    ShowWindow(Stop_Button, SW_SHOW);
+    Button_SetText(Stop_Button, L"Stop");
     ShowWindow(Game_Panel, SW_HIDE);
 	plansza->AddBlocks(blocks, ilosc);
 
@@ -25,7 +27,8 @@ bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time
 }
 
 // Funkcja restartująca grę
-bool RestartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND Clear_Button, HWND UI_Panel, HWND Game_Panel, HWND checkboxes[amount_width * amount_height], Plansza* plansza) {
+bool RestartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND Clear_Button, HWND Stop_Button, HWND UI_Panel, HWND Game_Panel, 
+                HWND checkboxes[amount_width * amount_height], Plansza* plansza) {
 
     for (int i = 0;i < amount_width; i++) {
         for (int j = 0;j < amount_height;j++) {
@@ -37,6 +40,7 @@ bool RestartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Ti
     ShowWindow(Time_Edit, SW_SHOW);
     ShowWindow(Time_Text, SW_SHOW);
     ShowWindow(Restart_Button, SW_HIDE);
+    ShowWindow(Stop_Button, SW_HIDE);
     ShowWindow(Game_Panel, SW_SHOW);
 	plansza->Reset();
     return false;

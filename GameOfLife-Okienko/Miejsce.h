@@ -2,6 +2,7 @@
 
 #include "Type.h"
 #include "Information.h"
+#include <Windows.h>
 
 // Stworzenie klasy Miejsce która będzie reprezentować pojedyncze pole na planszy
 class Miejsce {
@@ -83,7 +84,8 @@ public:
 
 // Podklasa Pełne oznaczająca pełne miejsce
 class Pelne : public Miejsce {
-public:
+
+    public:
     Pelne(int w, int s) {
         type = GetType(Type::X);
         wys = w;
