@@ -14,6 +14,10 @@
 // Czas pomiędzy kolejnymi krokami gry (w ms)
 int Time{500};
 
+// Ilosc generacji, ilosc miejsc pełnych
+int Generation{ 0 };
+int Population{ 0 };
+
 // Obiekt planszy
 Plansza plansza;
 
@@ -39,6 +43,8 @@ bool Initialaized{ false };
 HWND Clear_Button;
 // Stop Button do zatrzymywania gry podczas symulacji
 HWND Stop_Button;
+// Licznik generacji
+HWND Generation_Counter;
 
 // Text do Edit Control do czasu
 HWND Time_Text;
@@ -48,13 +54,15 @@ HWND UI_Panel;
 HWND Game_Panel;
 
 // ID Enter Button - 65534, ID Restart Button - 65533, ID Time Edit - 65532, 
-// ID Timer - 65531, ID Clear Button - 65530, ID Stop Button - 65529
+// ID Timer - 65531, ID Clear Button - 65530, ID Stop Button - 65529,
+// ID Generation Counter - 65528
 #define ID_ENTER 65534
 #define ID_RESTART 65533
 #define ID_TIME_EDIT 65532
 #define ID_TIMER 65531
 #define ID_CLEAR 65530
 #define ID_STOP 65529
+#define ID_GENERATION_COUNTER 65528
 
 // Handler Inputów dla głownego okna gry
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -81,7 +89,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			// Funkcja rysująca plansze podczas gdy gra jest uruchomiona
 			// Używa RysowanieEkranu.h
             if (GameStarted == true) {
-                GamePlaying(hdc, pelne, puste, plansza);
+                GamePlaying(hdc, pelne, puste, plansza, &Population);
 			}
 
             EndPaint(hwnd, &ps);
@@ -106,7 +114,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			// Rozpoczecie gry (ENTER) - (Używa StartRestart.h)
             else if (wParam == VK_RETURN) {
                 // Start Gry (StartRestart.h)
-				GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
+				GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button, Generation_Counter,
                                             UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
                 // Ustawienie Timera który wykonuje kolejne kroki gry co określoną ilość czasu (Time)
                 SetTimer(hwnd, ID_TIMER, Time, NULL);
@@ -115,8 +123,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             // Restart Gry (R) - (Używa StartRestart.h)
             else if (wParam == 0x52) {
-                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
-                                            UI_Panel, Game_Panel, checkboxes, &plansza);
+                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button, Generation_Counter,
+                                            UI_Panel, Game_Panel, checkboxes, &plansza, &Generation);
 
 				// Wyłączenie Timera
 				KillTimer(hwnd, ID_TIMER);
@@ -144,6 +152,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         // Timer, który odpowiada za wykonywanie kolejnych kroków gry
         case WM_TIMER: {
             if (GameStarted == true) {
+                Generation++;
+				SetWindowTextA(Generation_Counter, ("Generacja: " + std::to_string(Generation) + " Populacja " + std::to_string(Population)).c_str());
+				Population = 0;
                 plansza.AllNeighbours();
                 plansza.AllPlay();
 				// plansza.Show();
@@ -182,7 +193,7 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case WM_COMMAND: {
             // Start Gry (StartRestart.h)
             if (LOWORD(wParam) == ID_ENTER) {
-                GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
+                GameStarted = StartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button, Generation_Counter,
                                             UI_Panel, Game_Panel, checkboxes, &plansza, blocks, ilosc);
                 // Ustawienie Timera który wykonuje kolejne kroki gry co określoną ilość czasu (Time)
                 SetTimer(GetParent(hwnd), ID_TIMER, Time, NULL);
@@ -193,8 +204,8 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             // Restart Gry (StartRestart.h)
             else if (LOWORD(wParam) == ID_RESTART) {
-                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button,
-                                            UI_Panel, Game_Panel, checkboxes, &plansza);
+                GameStarted = RestartGame(Enter_Button, Restart_Button, Time_Edit, Time_Text, Clear_Button, Stop_Button, Generation_Counter,
+                                            UI_Panel, Game_Panel, checkboxes, &plansza, &Generation);
 
 				// Wyłączenie Timera
 				KillTimer(GetParent(hwnd), ID_TIMER);
@@ -457,6 +468,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         hInstance,
         NULL
 	);
+	// Tworzenie Countera generacji i populacji
+    Generation_Counter = CreateWindowEx(
+        0,
+        L"STATIC",
+        L"",
+        SW_HIDE | WS_CHILD | ES_NUMBER | ES_CENTER,
+        0, 0, 300, 20,
+        UI_Panel,
+        (HMENU)ID_GENERATION_COUNTER,
+        hInstance,
+        NULL
+    );
 
 	// Tworzenie Checkboxów
     for (int i = 0;i < amount_width; i++) {
