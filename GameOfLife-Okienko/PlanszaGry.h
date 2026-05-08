@@ -28,6 +28,7 @@ public:
         }
 	}
 
+	// Funkcja pokazująca planszę w konsoli (Debug)
     void Show() {
         for (int i = 0; i < amount_width; i++) {
             std::cout << "\n";

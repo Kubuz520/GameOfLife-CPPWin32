@@ -4,7 +4,7 @@
 #include "Information.h"
 
 // Funkcja startująca grę
-bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND UI_Panel, HWND Game_Panel, HWND checkboxes[amount_width*amount_height], Plansza* plansza,
+bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND Clear_Button, HWND UI_Panel, HWND Game_Panel, HWND checkboxes[amount_width*amount_height], Plansza* plansza,
                 int blocks[], int ilosc) {
 
     for (int i = 0;i < amount_width; i++) {
@@ -13,6 +13,7 @@ bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time
         }
     }
     ShowWindow(Enter_Button, SW_HIDE);
+    ShowWindow(Clear_Button, SW_HIDE);
     ShowWindow(Time_Edit, SW_HIDE);
     ShowWindow(Time_Text, SW_HIDE);
     ShowWindow(Restart_Button, SW_SHOW);
@@ -24,7 +25,7 @@ bool StartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time
 }
 
 // Funkcja restartująca grę
-bool RestartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND UI_Panel, HWND Game_Panel, HWND checkboxes[amount_width * amount_height], Plansza* plansza) {
+bool RestartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Time_Text, HWND Clear_Button, HWND UI_Panel, HWND Game_Panel, HWND checkboxes[amount_width * amount_height], Plansza* plansza) {
 
     for (int i = 0;i < amount_width; i++) {
         for (int j = 0;j < amount_height;j++) {
@@ -32,6 +33,7 @@ bool RestartGame(HWND Enter_Button, HWND Restart_Button, HWND Time_Edit, HWND Ti
         }
     }
     ShowWindow(Enter_Button, SW_SHOW);
+    ShowWindow(Clear_Button, SW_SHOW);
     ShowWindow(Time_Edit, SW_SHOW);
     ShowWindow(Time_Text, SW_SHOW);
     ShowWindow(Restart_Button, SW_HIDE);
