@@ -140,6 +140,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Miejsce.cpp" />
+    <ClCompile Include="PlanszaGry.cpp" />
+    <ClCompile Include="RysowanieEkranu.cpp" />
+    <ClCompile Include="StartRestart.cpp" />
+    <ClCompile Include="Type.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GameOfLife-Okienko.rc" />

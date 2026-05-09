@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Pliki źródłowe\Naglowki">
+      <UniqueIdentifier>{518d8896-fd6f-4ce9-8cb9-31880346e2d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Pliki CPP">
+      <UniqueIdentifier>{452523cc-a39e-492a-9d7d-e6ad985dbaf2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,28 +33,43 @@
     <ClInclude Include="GameOfLife-Okienko.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Miejsce.h">
-      <Filter>Pliki źródłowe</Filter>
+    <ClInclude Include="Information.h">
+      <Filter>Pliki źródłowe\Naglowki</Filter>
     </ClInclude>
     <ClInclude Include="Type.h">
-      <Filter>Pliki źródłowe</Filter>
+      <Filter>Pliki źródłowe\Naglowki</Filter>
+    </ClInclude>
+    <ClInclude Include="Miejsce.h">
+      <Filter>Pliki źródłowe\Naglowki</Filter>
     </ClInclude>
     <ClInclude Include="PlanszaGry.h">
-      <Filter>Pliki źródłowe</Filter>
-    </ClInclude>
-    <ClInclude Include="Information.h">
-      <Filter>Pliki źródłowe</Filter>
+      <Filter>Pliki źródłowe\Naglowki</Filter>
     </ClInclude>
     <ClInclude Include="RysowanieEkranu.h">
-      <Filter>Pliki źródłowe</Filter>
+      <Filter>Pliki źródłowe\Naglowki</Filter>
     </ClInclude>
     <ClInclude Include="StartRestart.h">
-      <Filter>Pliki źródłowe</Filter>
+      <Filter>Pliki źródłowe\Naglowki</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Type.cpp">
+      <Filter>Pliki źródłowe\Pliki CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Miejsce.cpp">
+      <Filter>Pliki źródłowe\Pliki CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanszaGry.cpp">
+      <Filter>Pliki źródłowe\Pliki CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="RysowanieEkranu.cpp">
+      <Filter>Pliki źródłowe\Pliki CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="StartRestart.cpp">
+      <Filter>Pliki źródłowe\Pliki CPP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

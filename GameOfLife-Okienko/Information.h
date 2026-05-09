@@ -1,19 +1,16 @@
 #pragma once
 
 // szerokosc i wysokosc ekranu
-const int width = 1800;
-const int height = 1000;
+inline constexpr int width = 1800;
+inline constexpr int height = 1000;
 
 // Ilosc Miejsca w tablicach
-const int amount_width = 120;
-const int amount_height = 54;
+inline constexpr int amount_width = 120;
+inline constexpr int amount_height = 54;
 
 // Szerokosc i wysokosc pojedynczego bloku
-const int block_width = 15;
-const int block_height = 15;
+inline constexpr int block_width = 15;
+inline constexpr int block_height = 15;
 
 // Informacja o tym czy gra się rozpoczeła
-bool GameStarted{false};
-
-
-
+inline bool GameStarted{ false };
