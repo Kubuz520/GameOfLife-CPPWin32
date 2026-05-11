@@ -163,9 +163,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             return 0;
         }
         
-        // Handler buttonów
-        case WM_COMMAND: {
-            return 0;
+        // Handler zmiany rozmiaru okna
+        case WM_ERASEBKGND:
+        {
+            HDC hdc = (HDC)wParam;
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+
+            HBRUSH color = CreateSolidBrush(RGB(255, 255, 255));
+            FillRect(hdc, &rc, color);
+            DeleteObject(color);
+
+            break;
         }
 
     }
@@ -255,7 +264,7 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                     KillTimer(GetParent(hwnd), ID_TIMER);
 				}
                 else {
-                    SetWindowTextW(Stop_Button, L"Stop");
+                    SetWindowTextW(Stop_Button, L"Resume");
                     (Stop_Button, L"Stop");
                     ShowWindow(Time_Edit, SW_HIDE);
                     ShowWindow(Time_Text, SW_HIDE);
