@@ -256,7 +256,7 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             // Stop Button
             else if (LOWORD(wParam) == ID_STOP) {
                 if (GameStarted == true) {
-                    SetWindowTextW(Stop_Button, L"Stop");
+                    SetWindowTextW(Stop_Button, L"Resume");
                     (Stop_Button, L"Resume");
                     ShowWindow(Time_Edit, SW_SHOW);
                     ShowWindow(Time_Text, SW_SHOW);
@@ -264,7 +264,7 @@ LRESULT CALLBACK UiProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                     KillTimer(GetParent(hwnd), ID_TIMER);
 				}
                 else {
-                    SetWindowTextW(Stop_Button, L"Resume");
+                    SetWindowTextW(Stop_Button, L"Stop");
                     (Stop_Button, L"Stop");
                     ShowWindow(Time_Edit, SW_HIDE);
                     ShowWindow(Time_Text, SW_HIDE);
